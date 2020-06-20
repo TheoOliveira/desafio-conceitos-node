@@ -84,9 +84,9 @@ app.post("/repositories/:id/like", (request, response) => {
   if (repoIndex < 0) {
     return response.status(400).json({ error: "repositóŕio não encontrado!" });
   }
-  console.log(repositories[repoIndex]);
 
-  repositories[repoIndex].likes++;
+  repositories[repoIndex] = {...repositories[repoIndex], likes: repositories[repoIndex].likes + 1}
+  
 
   return response.status(200).json(repositories[repoIndex]);
 });
