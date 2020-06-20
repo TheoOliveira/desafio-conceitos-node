@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-const { uuid } = require("uuidv4");
+const { uuid, isUuid } = require("uuidv4");
 
 const app = express();
 
@@ -10,9 +10,23 @@ app.use(cors());
 
 const repositories = [];
 
+//////////////////////////////// ID VALIDATION////////////////////////////////
+
+function validId(request, response, next) {
+  const { id } = request.params;
+
+  if (!isUuid(id)) {
+    return response.status(400).json({ erro: "id inválido!" });
+  }
+}
+
+//////////////////////////////// GET////////////////////////////////
+
 app.get("/repositories", (request, response) => {
   return response.status(200).json(repositories);
 });
+
+//////////////////////////////// POST////////////////////////////////
 
 app.post("/repositories", (request, response) => {
   const { title, url, techs } = request.body;
@@ -22,7 +36,8 @@ app.post("/repositories", (request, response) => {
   return response.status(200).json(repository);
 });
 
-app.put("/repositories/:id", (request, response) => {
+//////////////////////////////// UPDATE////////////////////////////////
+app.put("/repositories/:id", validId, (request, response) => {
   const { id } = request.params;
   const { title, url, techs } = request.body;
 
@@ -40,6 +55,7 @@ app.put("/repositories/:id", (request, response) => {
   return response.status(200).json(repository);
 });
 
+//////////////////////////////// DELETE////////////////////////////////
 app.delete("/repositories/:id", (request, response) => {
   const { id } = request.params;
 
@@ -56,13 +72,13 @@ app.delete("/repositories/:id", (request, response) => {
   return response.status(204).send();
 });
 
+//////////////////////////////// ADD LIKES////////////////////////////////
+
 app.post("/repositories/:id/like", (request, response) => {
-  const {id } = request.params;
-  
+  const { id } = request.params;
+
   const repoIndex = repositories.findIndex(
-    (repository) => {repository.id === id
-    
-  }
+    (repository) => repository.id === id
   );
 
   if (repoIndex < 0) {
@@ -70,11 +86,9 @@ app.post("/repositories/:id/like", (request, response) => {
   }
   console.log(repositories[repoIndex]);
 
-  repositories[repoIndex].likes++;  
-  
+  repositories[repoIndex].likes++;
 
   return response.status(200).json(repositories[repoIndex]);
 });
-
 
 module.exports = app;
