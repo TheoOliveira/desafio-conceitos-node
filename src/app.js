@@ -18,6 +18,7 @@ function validId(request, response, next) {
   if (!isUuid(id)) {
     return response.status(400).json({ erro: "id inválido!" });
   }
+  return next();
 }
 
 //////////////////////////////// GET////////////////////////////////
@@ -48,11 +49,10 @@ app.put("/repositories/:id", validId, (request, response) => {
   if (repoIndex < 0) {
     return response.status(400).json({ error: "repositóŕio não encontrado!" });
   }
-  const repository = { id, title, url, techs, likes };
 
-  repositories[repoIndex] = repository;
-  console.log(repository);
-  return response.status(200).json(repository);
+  repositories[repoIndex] = {...repositories[repoIndex], title,url, techs }
+
+  return response.status(200).json(repositories[repoIndex]);
 });
 
 //////////////////////////////// DELETE////////////////////////////////
